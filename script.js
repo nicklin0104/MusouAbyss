@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 硬編碼指定三國與戰國的無所屬名單，避免改動來源資料
     const sanguoUnaffiliated = ["張角", "孟獲", "祝融", "左慈", "董白", "張角 (起源)", "紫鸞"];
-    const sengokuUnaffiliated = ["阿國", "石川五右衛門", "雜賀孫市"];
+    const sengokuUnaffiliated = ["阿國", "石川五右衛門", "雜賀孫市", "前田慶次"];
 
     // 預期排列的順序定義
     const attrGroup1Order = ["力", "技", "堅", "速", "智", "魅"];
