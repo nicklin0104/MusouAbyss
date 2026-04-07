@@ -9,6 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultsCount = document.getElementById('results-count');
     const emptyState = document.getElementById('empty-state');
     const resetBtn = document.getElementById('reset-btn');
+    const toggleAltered = document.getElementById('toggle-altered');
+    const toggleBreakthrough = document.getElementById('toggle-breakthrough');
+
+    toggleAltered.addEventListener('change', applyFilters);
+    toggleBreakthrough.addEventListener('change', applyFilters);
 
     let allHeroes = [];
     let selectedAttributes = new Set();
@@ -40,8 +45,22 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 資料預處理階段
         heroes.forEach(hero => {
-            hero._attrs = hero['印記(屬性)'] ? hero['印記(屬性)'].split(',').map(s => s.trim()).filter(s => s) : [];
-            hero._traitsOriginal = hero['印記(特性)'] ? hero['印記(特性)'].split(',').map(s => s.trim()).filter(s => s) : [];
+            const parseTags = (str) => {
+                if (!str) return [];
+                return str.split(',').map(s => {
+                    const txt = s.trim();
+                    if (!txt) return null;
+                    const isBreakthrough = txt.startsWith('[') && txt.endsWith(']');
+                    const baseName = isBreakthrough ? txt.slice(1, -1) : txt;
+                    return { name: baseName, isBreakthrough };
+                }).filter(o => o);
+            };
+
+            hero._attrsObj = parseTags(hero['印記(屬性)']);
+            hero._attrs = hero._attrsObj.map(o => o.name);
+            
+            hero._traitsOriginalObj = parseTags(hero['印記(特性)']);
+            hero._traitsOriginal = hero._traitsOriginalObj.map(o => o.name);
             
             // 建立 proxy traits 作為內部邏輯使用
             hero._traits = [];
@@ -125,10 +144,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function applyFilters() {
         let filtered = allHeroes;
+        
+        const showAltered = toggleAltered.checked;
+        const includeBreakthrough = toggleBreakthrough.checked;
+
+        if (!showAltered) {
+            filtered = filtered.filter(hero => !hero['英傑'].includes('(異化)'));
+        }
+
         if (selectedAttributes.size > 0 || selectedTraits.size > 0) {
-            filtered = allHeroes.filter(hero => {
-                const hasAllAttrs = Array.from(selectedAttributes).every(attr => hero._attrs.includes(attr));
-                const hasAllTraits = Array.from(selectedTraits).every(trait => hero._traits.includes(trait));
+            filtered = filtered.filter(hero => {
+                let availableAttrs = hero._attrsObj.filter(o => includeBreakthrough || !o.isBreakthrough).map(o => o.name);
+                let availableTraitsOriginal = hero._traitsOriginalObj.filter(o => includeBreakthrough || !o.isBreakthrough).map(o => o.name);
+                
+                let availableTraits = [];
+                availableTraitsOriginal.forEach(t => {
+                    availableTraits.push(t);
+                    if (t === '無所屬') {
+                        if (sanguoUnaffiliated.includes(hero['英傑'])) availableTraits.push('無所屬 (三國)');
+                        else if (sengokuUnaffiliated.includes(hero['英傑'])) availableTraits.push('無所屬 (戰國)');
+                        else availableTraits.push('無所屬 (其他)');
+                    }
+                });
+
+                const hasAllAttrs = Array.from(selectedAttributes).every(attr => availableAttrs.includes(attr));
+                const hasAllTraits = Array.from(selectedTraits).every(trait => availableTraits.includes(trait));
                 return hasAllAttrs && hasAllTraits;
             });
         }
@@ -174,11 +214,12 @@ document.addEventListener('DOMContentLoaded', () => {
             card.className = 'hero-card card-enter';
             card.style.animationDelay = `${(index % 12) * 0.05}s`;
 
-            // 對於 tiny tags，我們傳進 onclick handler() 的是原始的 tag ('無所屬')
-            // 這樣點擊小標籤時，就能直接發揮 Generic 查詢
-            const renderTinyTags = (originalList, typeClass) => {
-                return originalList.map((tag, i) => {
-                    return `<span class="hero-tiny-tag ${typeClass}" onclick="handleTinyTagClick('${tag}', '${typeClass}')">${tag}</span>`
+            // 對於 tiny tags，我們傳進 onclick handler() 的是原始的 tag baseName.
+            // 透過 _attrsObj / _traitsOriginalObj 我們能知道它是不是 breakthrough 來加上 css
+            const renderTinyTags = (objList, typeClass) => {
+                return objList.map(o => {
+                    const extraClass = o.isBreakthrough ? ' breakthrough-tag' : '';
+                    return `<span class="hero-tiny-tag ${typeClass}${extraClass}" onclick="handleTinyTagClick('${o.name}', '${typeClass}')">${o.name}</span>`
                 }).join('');
             };
 
@@ -187,13 +228,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="hero-tags-group">
                     <div class="hero-tag-label">印記(屬性)</div>
                     <div class="hero-tag-list">
-                        ${renderTinyTags(hero._attrs, 'attr')}
+                        ${renderTinyTags(hero._attrsObj, 'attr')}
                     </div>
                 </div>
                 <div class="hero-tags-group">
                     <div class="hero-tag-label">印記(特性)</div>
                     <div class="hero-tag-list">
-                        ${renderTinyTags(hero._traitsOriginal, 'trait')}
+                        ${renderTinyTags(hero._traitsOriginalObj, 'trait')}
                     </div>
                 </div>
             `;

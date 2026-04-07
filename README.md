@@ -1,64 +1,79 @@
-# Musou Abyss Hero Data Web App (無雙深淵 英傑印記一覽)
+# Musou Abyss Hero Database (無雙深淵 英傑資料庫)
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-View_Site-00d2ff?style=for-the-badge&logo=github)](https://nicklin0104.github.io/MusouAbyss/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Play%20Now-success?style=for-the-badge)](https://nicklin0104.github.io/MusouAbyss/)
 
-🌐 **線上觀看 (Live Demo):** [https://nicklin0104.github.io/MusouAbyss/](https://nicklin0104.github.io/MusouAbyss/)
+**A visually stunning, lightweight, and responsive hero filtering database designed for the game "Musou Abyss".**  
+**一款專為《無雙深淵》打造的網頁版英傑資料庫，具備精美的毛玻璃特效、流暢的過濾體驗與手機排版優化。**
 
 ---
 
-## 🇹🇼 中文說明 (Traditional Chinese)
+## 🌐 Live Demo / 線上預覽
+**[https://nicklin0104.github.io/MusouAbyss/](https://nicklin0104.github.io/MusouAbyss/)**
 
-這是一個為《無雙深淵》打造的高質感專屬英傑印記（Hero Marks）篩選與查詢網頁。
-採用零框架 (Zero-framework) 開發，無需伺服器或繁瑣的環境設定，雙擊即可在本機或 GitHub Pages 上完美運行。
+---
 
-### ✨ 核心亮點
-* **深色毛玻璃質感設計 (Dark Glassmorphism)**：現代化的 UI 體驗，帶有動態背景光暈與直覺的懸停微動畫。
-* **行動裝置優先 (Mobile-First)**：以英雄卡片取代傳統表格，特別為 iPhone 等手機版面呈現最佳化，單手滑動也一目瞭然。
-* **動態交集篩選 (Dynamic AND Filter)**：「印記(屬性)」與「印記(特性)」會**全自動**從資料庫抓取並依照自訂分類產生，點選多項標籤能精準呈現符合**所有**條件的英傑。
-* **點擊卡片標籤即可篩選**：直接點擊英雄卡片上的迷你標籤，系統便會自動將其加入上方的篩選條件並立即過濾！
+## ⚡ Features / 核心功能
 
-### 🚀 如何新增或修改英雄資料？
-若您希望新增英雄或修改有錯字的特性，請**不需**修改網頁程式碼。
-您只需用任意文字編輯器打開 `data.js`，按照以下格式在該檔案最底下加上新的英雄資料即可：
+### 🇹🇼 中文簡介
+* **極致輕量 (Vanilla JS)**：全專案不使用任何框架（如 React/Vue）與打包工具，將 HTML、CSS 與 JS 切分得乾淨俐落，隨載隨用。
+* **深色毛玻璃美學 (Dark Glassmorphism)**：現代化 UI 設計，卡片擁有玻璃擬真背景與動態打光特效。
+* **智能篩選與多重過濾**：
+  * 屬性與特性進行混合「交集 (AND)」篩選。
+  * 卡片上的標籤支援「點擊聯動」，點擊卡片標籤可直接反映到全局篩選條件。
+  * **無所屬代理機制**：系統自動在背景將「無所屬」依據勢力分為三國、戰國與其他，並依舊相容廣域的「無所屬(所有)」查詢。
+* **異化與突破系統**：
+  * **突破印記**：達成突破條件獲得的印記，將以金黃色光暈特效高調呈現。並提供專屬開關決定是否依據突破印記進行嚴謹篩選。
+  * **異化英雄**：專屬開關一鍵召喚 (異化) 英雄陣容，預設隱藏以確保版面簡潔。
+
+### 🇺🇸 English Overview
+* **Lightweight Architecture**: Built purely with Vanilla JavaScript, HTML5, and CSS3. Zero build steps, zero bloated dependencies.
+* **Premium Aesthetics**: Features a modern Dark Glassmorphism UI, breathing dynamic background, and satisfying hover animations.
+* **Advanced Multi-Filtering**: 
+  * Select multiple attributes and traits utilizing exact AND logic.
+  * Clickable tiny-tags on hero cards update the global search queries seamlessly.
+  * Complex categorization to seamlessly differentiate between "SanGuo" and "Sengoku" unaffiliated proxy queries.
+* **Breakthrough & Altered Systems**:
+  * Easily toggle the visibility of special "Altered" (異化) alternative heroes via UI switches.
+  * Breakthrough traits feature glowing golden borders and a UI switch that dictates validation rigorousness.
+
+---
+
+## 🛠️ How to Run / 如何在本地運行
+
+Because the project utilizes a strict CORS-friendly `data.js` standard, you can technically run this without any servers!  
+只需要兩步即可執行：
+
+1. Clone the repository / 下載專案:
+   ```bash
+   git clone https://github.com/nicklin0104/MusouAbyss.git
+   ```
+2. Open `index.html` in your browser / 直接雙擊點開 `index.html` 即可。
+   - *Optional:* You can also use a local server like `python -m http.server 8000` to serve the files.
+
+---
+
+## 📝 Maintenance & Data Updates / 資料維護方式
+
+Adding a new hero doesn't require compiling code or database knowledge! The entire hero dataset is stored in `data.js`.  
+若想新增或編輯英傑，只需要打開 `data.js`：
+
 ```javascript
+// Example Hero Entry
 {
-    "英傑": "新英雄的名稱",
-    "印記(屬性)": "力, 火",
-    "印記(特性)": "魏, 猛將, 戰場之花"
+    "英傑": "周瑜",
+    "印記(屬性)": "技, 魅",
+    "印記(特性)": "吳, 軍師, 江東猛將"
 }
+// Note: Trait items enclosed in square brackets in the original data (e.g. [大名]) define Breakthrough traits, 
+// which are logically parsed and rendered out dynamically. 
 ```
-*(注意：與上一位英雄之間必須加上一個逗號 `,`)*
-您新增完畢儲存後，刷新網頁，所有新出現的屬性標籤都會自動生成在上方提供篩選！
+
+**Steps to update (更新步驟)：**
+1. 打開 `data.js`。
+2. 照著格式輸入新的英傑字典物件。
+3. 存檔，重新整理網頁，篩選按鈕與分類便會自動算出頻率並重新生成！
 
 ---
 
-## 🇬🇧 English Description
-
-This is a premium, highly responsive character and mark (traits/attributes) filtering web application specifically built for the "Musou Abyss" game data. 
-Built with zero external frameworks, it requires no compilation and runs seamlessly on local environments or GitHub Pages.
-
-### ✨ Key Features
-* **Dark Glassmorphism Design**: Experience a modern graphical interface with floating ambient glows, smooth micro-animations, and satisfying hover state feedback.
-* **Mobile-First Layout**: Utilizing a card-based grid layout instead of traditional wide tables ensures that navigating details across devices—especially mobile phones—is effortless and beautiful.
-* **Dynamic "AND" Tag Filtering**: System automatically scans the database to generate categories. Selecting multiple trait or attribute tags strictly filters the results to heroes possessing **all** selected conditions. 
-* **Interactive Hero Cards**: Clicking on any tiny tag integrated directly on the hero cards acts automatically as a filter selection, allowing for ultra-fast data pivoting.
-
-### 🚀 How to Add or Modify Hero Data
-To expand your roster or correct typos, **no HTML/JS coding** is necessary.
-Simply open `data.js` via any text editor and append your new character using the JSON-like object format at the end:
-```javascript
-{
-    "英傑": "Hero Name",
-    "印記(屬性)": "Attribute1, Attribute2",
-    "印記(特性)": "Trait1, Trait2"
-}
-```
-*(Note: Remember to separate objects with a comma `,`)*
-Once saved, re-open the browser and the web app will auto-parse, inject the cards, and generate corresponding filter tags dynamically.
-
----
-
-### 💻 Technologies Used
-* **HTML5** & **CSS3** (CSS Variables, Flexbox, Grid, Animations)
-* **Vanilla JavaScript** (ES6+, DOM Manipulation, Array API)
-* Completely static—no Node.js, Webpack, or Vite required!
+## 📱 Mobile Responsive / 行動裝置完美適配
+The application uses CSS Grids, Flexbox, and Media Queries to map seamlessly to iOS and Android devices, keeping buttons and hero cards highly touch-friendly!
